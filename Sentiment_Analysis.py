@@ -36,7 +36,7 @@ def process_sentiment():
     sentiment_results = []  # Store sentiment counts for all tickers and dates
     news_results = []  # Store news data separately
 
-    today = date.today()
+    today = datetime.now().date()
 
     for ticker in TICKERS:
         try:
