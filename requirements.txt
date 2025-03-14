@@ -2,3 +2,5 @@ pandas
 datetime
 transformers
 yahoo_fin
+tensorflow
+numpy
