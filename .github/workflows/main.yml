@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check out the repository to the runner
+    - name: Check out the repository
       uses: actions/checkout@v4
 
     - name: Set up Python
@@ -21,7 +21,6 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install torch==1.13.1+cpu torchvision==0.14.1+cpu torchaudio==0.13.1 -f https://download.pytorch.org/whl/torch_stable.html
         pip install -r requirements.txt
 
     - name: Run Python Script
