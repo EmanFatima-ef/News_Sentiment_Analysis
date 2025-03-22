@@ -61,3 +61,6 @@ date,ticker,positive,negative,neutral
 2025-03-21,GOOGL,0,0,1
 2025-03-21,TSLA,0,0,1
 2025-03-21,AAPL,0,0,1
+2025-03-22,CVX,0,1,0
+2025-03-22,TSLA,0,2,2
+2025-03-22,NFLX,1,0,0
