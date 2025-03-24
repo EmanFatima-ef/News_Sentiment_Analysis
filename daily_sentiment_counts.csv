@@ -68,3 +68,6 @@ date,ticker,positive,negative,neutral
 2025-03-23,NVDA,0,0,1
 2025-03-23,GOOGL,0,0,1
 2025-03-23,META,0,0,1
+2025-03-24,CVX,0,1,0
+2025-03-24,TSLA,0,1,0
+2025-03-24,NFLX,1,0,0
