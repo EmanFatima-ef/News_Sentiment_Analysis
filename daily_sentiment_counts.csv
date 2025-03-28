@@ -88,3 +88,5 @@ date,ticker,positive,negative,neutral
 2025-03-27,META,1,0,0
 2025-03-27,TSLA,1,0,0
 2025-03-27,NFLX,1,0,0
+2025-03-28,UNH,0,0,1
+2025-03-28,NVDA,0,0,1
