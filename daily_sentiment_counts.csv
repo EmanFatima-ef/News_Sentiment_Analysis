@@ -101,3 +101,6 @@ date,ticker,positive,negative,neutral
 2025-04-03,NVDA,0,0,1
 2025-04-03,TSLA,0,0,1
 2025-04-04,TSLA,0,2,0
+2025-04-09,MSFT,0,1,0
+2025-04-09,NVDA,1,0,0
+2025-04-09,AMD,1,0,0
