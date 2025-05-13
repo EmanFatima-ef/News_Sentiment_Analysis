@@ -188,3 +188,5 @@ date,ticker,positive,negative,neutral
 2025-05-09,NVDA,0,1,0
 2025-05-09,AMD,0,1,0
 2025-05-12,WMT,0,0,1
+2025-05-13,GOOGL,1,0,0
+2025-05-13,AAPL,2,0,0
