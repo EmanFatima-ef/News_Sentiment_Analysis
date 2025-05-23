@@ -224,3 +224,5 @@ date,ticker,positive,negative,neutral
 2025-05-21,GOOGL,0,1,0
 2025-05-21,META,0,1,1
 2025-05-22,WMT,0,1,0
+2025-05-23,NKE,0,0,1
+2025-05-23,GOOGL,0,1,0
