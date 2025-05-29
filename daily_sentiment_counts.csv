@@ -236,3 +236,5 @@ date,ticker,positive,negative,neutral
 2025-05-27,AAPL,1,0,0
 2025-05-28,CVX,0,1,0
 2025-05-28,NVDA,1,0,0
+2025-05-29,BA,0,1,0
+2025-05-29,CVX,1,1,0
