@@ -261,3 +261,5 @@ date,ticker,positive,negative,neutral
 2025-06-10,LLY,1,0,0
 2025-06-10,NFLX,1,0,0
 2025-06-10,AAPL,0,1,2
+2025-06-11,GOOGL,0,0,1
+2025-06-11,TSLA,0,2,0
