@@ -280,3 +280,6 @@ date,ticker,positive,negative,neutral
 2025-06-15,GOOGL,1,0,0
 2025-06-15,META,1,0,0
 2025-06-15,AMD,1,0,0
+2025-06-16,NVDA,0,0,1
+2025-06-16,AVGO,0,0,1
+2025-06-16,AMD,0,0,1
