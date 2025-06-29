@@ -335,3 +335,6 @@ date,ticker,positive,negative,neutral
 2025-06-28,NFLX,1,0,0
 2025-06-28,AXP,1,0,0
 2025-06-28,AAPL,1,0,0
+2025-06-29,NVDA,0,1,0
+2025-06-29,TSLA,1,0,0
+2025-06-29,AMD,1,0,0
