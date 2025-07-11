@@ -386,3 +386,6 @@ date,ticker,positive,negative,neutral
 2025-07-10,AVGO,1,0,0
 2025-07-10,AAPL,1,0,0
 2025-07-10,AMD,0,0,1
+2025-07-11,INTC,0,0,1
+2025-07-11,NVDA,0,1,1
+2025-07-11,AMD,0,1,1
