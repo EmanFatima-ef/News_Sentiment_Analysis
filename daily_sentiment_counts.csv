@@ -432,3 +432,5 @@ date,ticker,positive,negative,neutral
 2025-07-19,TSLA,1,0,0
 2025-07-19,NFLX,0,1,0
 2025-07-19,AMGN,1,0,0
+2025-07-20,WMT,0,1,0
+2025-07-20,TSLA,0,0,1
