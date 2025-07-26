@@ -473,3 +473,5 @@ date,ticker,positive,negative,neutral
 2025-07-25,TSLA,1,1,1
 2025-07-25,AVGO,0,1,0
 2025-07-25,AMD,0,1,0
+2025-07-26,NVDA,0,0,1
+2025-07-26,META,0,0,1
