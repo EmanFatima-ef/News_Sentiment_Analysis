@@ -520,3 +520,6 @@ date,ticker,positive,negative,neutral
 2025-08-01,TSLA,1,0,0
 2025-08-01,LLY,0,0,1
 2025-08-01,AAPL,2,1,0
+2025-08-02,GOOGL,0,0,1
+2025-08-02,META,0,1,1
+2025-08-02,AAPL,1,0,0
