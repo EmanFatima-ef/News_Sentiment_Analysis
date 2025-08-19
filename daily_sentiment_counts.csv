@@ -610,3 +610,5 @@ date,ticker,positive,negative,neutral
 2025-08-18,WMT,1,0,0
 2025-08-18,GOOGL,1,0,0
 2025-08-18,TSLA,1,1,0
+2025-08-19,INTC,3,0,1
+2025-08-19,TSLA,0,1,1
