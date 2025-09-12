@@ -729,3 +729,5 @@ date,ticker,positive,negative,neutral
 2025-09-11,BABA,1,0,0
 2025-09-11,AAPL,0,0,2
 2025-09-11,AMD,1,0,0
+2025-09-12,NVDA,0,0,1
+2025-09-12,TSLA,1,0,0
