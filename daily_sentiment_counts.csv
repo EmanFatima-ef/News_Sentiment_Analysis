@@ -756,3 +756,5 @@ date,ticker,positive,negative,neutral
 2025-09-18,META,0,1,1
 2025-09-18,AXP,0,1,0
 2025-09-18,AAPL,0,0,1
+2025-09-19,INTC,1,0,0
+2025-09-19,NVDA,1,0,0
