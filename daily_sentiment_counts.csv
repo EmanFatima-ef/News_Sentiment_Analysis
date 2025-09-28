@@ -789,3 +789,5 @@ date,ticker,positive,negative,neutral
 2025-09-26,AMD,1,0,0
 2025-09-27,MSFT,0,1,0
 2025-09-27,NVDA,0,0,1
+2025-09-28,INTC,0,0,1
+2025-09-28,AAPL,0,0,1
