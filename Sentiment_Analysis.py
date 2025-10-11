@@ -41,6 +41,7 @@ def process_sentiment():
     for ticker in TICKERS:
         try:
             news_data = fetch_news(ticker)
+            print(ticker, "articles returned:", len(news_data))
             if news_data.empty or 'published' not in news_data.columns or 'summary' not in news_data.columns:
                 print(f"No valid news found for {ticker}. Skipping...")
                 continue
