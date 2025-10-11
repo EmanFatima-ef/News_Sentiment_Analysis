@@ -1,10 +1,10 @@
 import os
 import pandas as pd
-from datetime import date, datetime
+from datetime import date, timedelta
 from transformers import pipeline
 from yahoo_fin import news
 
-# Define stock tickers
+# ---------- 0.  CONFIG  ----------
 TICKERS = [
     "BA", "CAT", "CVX", "CSCO", "KO", "DOW", "GS", "HD", "HON", "IBM", "INTC",
     "JNJ", "JPM", "MCD", "MRK", "MSFT", "NKE", "PG", "CRM", "TRV", "UNH", "VZ",
@@ -13,106 +13,70 @@ TICKERS = [
     "AAPL", "AMD"
 ]
 
-# Sentiment analysis model setup using FinBERT
 sentiment_analyzer = pipeline('sentiment-analysis', model='ProsusAI/finbert')
 
+# ---------- 1.  TARGET = LAST CAL-DAY  ----------
+TARGET_DATE = date.today() - timedelta(days=1)   # same day for local + runner
+
+# ---------- 2.  YOUR ORIGINAL HELPERS  ----------
 def fetch_news(ticker):
-    """Fetches the latest news for the given stock ticker."""
-    news_data = news.get_yf_rss(ticker)
-    return pd.DataFrame(news_data)
+    return pd.DataFrame(news.get_yf_rss(ticker))
 
 def calculate_sentiment(texts):
-    """Counts the number of positive, negative, and neutral sentiments."""
-    sentiment_counts = {"positive": 0, "negative": 0, "neutral": 0}
+    counts = {"positive": 0, "negative": 0, "neutral": 0}
+    for txt in texts:
+        label = sentiment_analyzer(txt[:512])[0]['label'].lower()
+        counts[label] += 1
+    return counts
 
-    for text in texts:
-        sentiment = sentiment_analyzer(text)[0]['label'].lower()  # 'positive', 'negative', 'neutral'
-        sentiment_counts[sentiment] += 1  # Increment count
-
-    return sentiment_counts
-
+# ---------- 3.  MAIN  ----------
 def process_sentiment():
-    """Fetches news, stores news separately, calculates sentiment per ticker and per published date, and stores results."""
-    sentiment_results = []  # Store sentiment counts for all tickers and dates
-    news_results = []  # Store news data separately
-
-    today = date.today()
+    sentiment_rows, news_rows = [], []
 
     for ticker in TICKERS:
         try:
-            news_data = fetch_news(ticker)
-            print(ticker, "articles returned:", len(news_data))
-            if news_data.empty or 'published' not in news_data.columns or 'summary' not in news_data.columns:
-                print(f"No valid news found for {ticker}. Skipping...")
+            df = fetch_news(ticker)
+            print(ticker, "articles returned:", len(df))
+            if df.empty or {'published', 'summary'}.difference(df.columns):
+                print(f"No valid news for {ticker}")
                 continue
 
-            # Convert 'published' column to datetime and extract the date
-            news_data['published'] = pd.to_datetime(news_data['published']).dt.date
+            # convert pub string → date
+            df['published'] = pd.to_datetime(df['published']).dt.date
 
-            # Filter news articles to only include today's news
-            today_news = news_data[news_data['published'] == today]
-
-            if today_news.empty:
-                print(f"No news for {ticker} today. Skipping...")
+            # KEEP ONLY ARTICLES BELONGING TO TARGET_DATE
+            day_df = df[df['published'] == TARGET_DATE]
+            if day_df.empty:
+                print(f"No news for {ticker} on {TARGET_DATE}")
                 continue
 
-            # Store raw news articles separately
-            for _, row in today_news.iterrows():
-                news_results.append({
-                    "date": row['published'],
-                    "ticker": ticker,
-                    "summary": row['summary']
-                })
+            # store raw news
+            for _, r in day_df.iterrows():
+                news_rows.append({"date": TARGET_DATE,
+                                  "ticker": ticker,
+                                  "summary": r['summary']})
 
-            # Group by publication date and compute sentiment counts for each date
-            sentiment_counts = calculate_sentiment(today_news['summary'])
-
-            # Store result for this ticker and date
-            sentiment_results.append({
-                "date": today,
-                "ticker": ticker,
-                "positive": sentiment_counts["positive"],
-                "negative": sentiment_counts["negative"],
-                "neutral": sentiment_counts["neutral"]
-            })
-
+            # sentiment counts for this ticker+day
+            counts = calculate_sentiment(day_df['summary'])
+            sentiment_rows.append({"date": TARGET_DATE,
+                                   "ticker": ticker,
+                                   "positive": counts["positive"],
+                                   "negative": counts["negative"],
+                                   "neutral":  counts["neutral"]})
         except Exception as e:
-            print(f"Error processing {ticker}: {e}")
+            print("Error", ticker, e)
 
-    # Convert results to DataFrames
-    sentiment_df = pd.DataFrame(sentiment_results)
-    news_df = pd.DataFrame(news_results)
+    # ---------- 4.  APPEND TO CSV  ----------
+    def append(path, df):
+        if not df.empty:
+            header = not os.path.exists(path)
+            df.to_csv(path, mode='a', header=header, index=False)
 
-    # Define file paths
-    sentiment_file = "daily_sentiment_counts.csv"
-    news_file = "daily_news_data.csv"
+    append("daily_sentiment_counts.csv", pd.DataFrame(sentiment_rows))
+    append("daily_news_data.csv",        pd.DataFrame(news_rows))
 
-    # Check if sentiment data for today already exists
-    if os.path.exists(sentiment_file):
-        existing_sentiment_df = pd.read_csv(sentiment_file)
-        if not existing_sentiment_df[existing_sentiment_df['date'] == today.strftime('%Y-%m-%d')].empty:
-            print("Sentiment data for today already exists. Skipping append.")
-        else:
-            sentiment_df.to_csv(sentiment_file, index=False, mode='a', header=False)
-            print(f"Sentiment counts appended to {sentiment_file}")
-    else:
-        sentiment_df.to_csv(sentiment_file, index=False)
-        print(f"Sentiment counts saved to {sentiment_file}")
+    print("saved", len(news_rows), "articles", len(sentiment_rows), "day-records")
 
-    # Check if news data for today already exists
-    if os.path.exists(news_file):
-        existing_news_df = pd.read_csv(news_file)
-        if not existing_news_df[existing_news_df['date'] == today.strftime('%Y-%m-%d')].empty:
-            print("News data for today already exists. Skipping append.")
-        else:
-            news_df.to_csv(news_file, index=False, mode='a', header=False)
-            print(f"News data appended to {news_file}")
-    else:
-        news_df.to_csv(news_file, index=False)
-        print(f"News data saved to {news_file}")
-
-    if sentiment_df.empty and news_df.empty:
-        print("No new data to save.")
-
-# Run the script
-process_sentiment()
+# ---------- 5.  RUN  ----------
+if __name__ == "__main__":
+    process_sentiment()
