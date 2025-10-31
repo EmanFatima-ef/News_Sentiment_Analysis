@@ -2,6 +2,7 @@ import os, json, pandas as pd
 from datetime import datetime, timezone, timedelta
 from yahoo_fin import news
 from transformers import pipeline
+import pytz
 
 PK_TZ = pytz.timezone("Asia/Karachi")
 
