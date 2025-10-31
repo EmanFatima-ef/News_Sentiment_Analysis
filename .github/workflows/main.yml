@@ -2,7 +2,7 @@ name: News Sentiment Analysis
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Runs at midnight UTC every day
+    - cron: '19 19 * * *'  # Runs at midnight UTC every day
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
