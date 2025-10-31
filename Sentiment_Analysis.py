@@ -3,6 +3,8 @@ from datetime import datetime, timezone, timedelta
 from yahoo_fin import news
 from transformers import pipeline
 
+PK_TZ = pytz.timezone("Asia/Karachi")
+
 TICKERS = [
     "BA", "CAT", "CVX", "CSCO", "KO", "DOW", "GS", "HD", "HON", "IBM", "INTC",
     "JNJ", "JPM", "MCD", "MRK", "MSFT", "NKE", "PG", "CRM", "TRV", "UNH", "VZ",
@@ -20,18 +22,21 @@ CHECKPOINT  = "last_rss_timestamp.json"
 # ---------- helpers ----------
 def load_last_ts() -> pd.Timestamp:
     if os.path.exists(CHECKPOINT):
-        return pd.Timestamp(json.load(open(CHECKPOINT)), tz='UTC')
-    return pd.Timestamp(0, tz='UTC')   # epoch -> get everything first run
+        ts = pd.Timestamp(json.load(open(CHECKPOINT)))
+        return ts.tz_localize('UTC').astimezone(PK_TZ)
+    # First run: start from yesterday Pakistan time
+    return pd.Timestamp.now(PK_TZ) - pd.Timedelta(days=1)
 
 def save_last_ts(ts: pd.Timestamp):
-    json.dump(ts.isoformat(), open(CHECKPOINT, 'w'))
+    # Always save in UTC for consistency
+    json.dump(ts.astimezone(timezone.utc).isoformat(), open(CHECKPOINT, 'w'))
+
 
 def fetch_new_stories(ticker: str, after_ts: pd.Timestamp):
-    """Return DataFrame of stories *after* after_ts (UTC)."""
     df = pd.DataFrame(news.get_yf_rss(ticker))
     if df.empty or 'published' not in df.columns:
-        return df.iloc[:0]   # empty frame with correct cols
-    df['published'] = pd.to_datetime(df['published'], utc=True)
+        return df.iloc[:0]
+    df['published'] = pd.to_datetime(df['published'], utc=True).dt.tz_convert(PK_TZ)
     return df[df['published'] > after_ts]
 
 def sentiment_of(texts):
@@ -59,7 +64,7 @@ for ticker in TICKERS:
 if new_rows:                       # append brand-new stories
     pd.DataFrame(new_rows).to_csv(NEWS_FILE, mode='a',
                                    header=not os.path.exists(NEWS_FILE), index=False)
-    save_last_ts(pd.DataFrame(new_rows)['date'].max())
+    save_last_ts(pd.Timestamp.now(PK_TZ))
 
 # ---------- 2.  rebuild sentiment for every day that just got new rows ----------
 if not os.path.exists(NEWS_FILE):   # nothing to do first ever run
@@ -67,23 +72,23 @@ if not os.path.exists(NEWS_FILE):   # nothing to do first ever run
 
 all_news = pd.read_csv(NEWS_FILE, parse_dates=['date'])
 # days we touched this run
+today_local = pd.Timestamp.now(PK_TZ).date()
 days_with_news = pd.to_datetime(pd.DataFrame(new_rows)['date']).dt.date.unique() \
                  if new_rows else []
 
 for day in days_with_news:
-    day_news = all_news[all_news['date'].eq(day)]
+    day_news = all_news[all_news['date'].dt.date == day]
 
-    # delete old counts for that day
     if os.path.exists(COUNT_FILE):
         old_counts = pd.read_csv(COUNT_FILE, parse_dates=['date'])
-        old_counts = old_counts[old_counts['date'].ne(day)]
+        old_counts = old_counts[old_counts['date'].dt.date != day]
     else:
         old_counts = pd.DataFrame()
 
     # aggregate fresh counts
     fresh_counts = []
     for ticker in TICKERS:
-        sub = day_news[day_news['ticker'].eq(ticker)]
+        sub = day_news[day_news['ticker'] == ticker]
         if sub.empty:
             continue
         counts = sentiment_of(sub['summary'])
